@@ -60,7 +60,11 @@ pub fn get_ctags_lsp_binary_path() -> String {
 }
 
 pub fn get_ctags_lsp_args() -> Vec<String> {
-    let ctags_bin = std::env::var("CTAGS_BIN").unwrap_or_else(|_| "ctags".to_string());
+    let ctags_bin =
+        std::env::var("CTAGS_BIN").unwrap_or_else(|_| match zed::current_platform().0 {
+            zed::Os::Windows => "D:\\Tools\\ctags\\ctags.exe".to_string(),
+            _ => "ctags".to_string(),
+        });
     vec!["--ctags-bin".to_string(), ctags_bin]
 }
 
