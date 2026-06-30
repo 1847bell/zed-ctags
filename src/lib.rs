@@ -20,7 +20,7 @@ impl zed::Extension for CtagsExtension {
         );
 
         ctags_lsp::download_ctags_lsp_binary().map_err(|msg| {
-            let err_msg = format!("Error downloading clang lsp: {}", msg);
+            let err_msg = format!("Error downloading ctags lsp: {}", msg);
             zed::set_language_server_installation_status(
                 language_server_id,
                 &zed::LanguageServerInstallationStatus::Failed(err_msg.clone()),

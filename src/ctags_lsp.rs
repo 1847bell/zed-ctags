@@ -3,12 +3,18 @@ use zed_extension_api as zed;
 type ErrorMessage = String;
 
 const CTAGS_LSP_FOLDER_NAME: &str = "ctags-lsp-project";
-const CTAGS_LSP_BINARY_NAME: &str = "ctags-lsp";
 const CTAGS_LSP_VERSION: &str = "v0.11.0";
 
 struct CtagsLspBinary {
     url: String,
     file_type: zed::DownloadedFileType,
+}
+
+fn ctags_lsp_binary_name() -> &'static str {
+    match zed::current_platform().0 {
+        zed::Os::Windows => "ctags-lsp.exe",
+        _ => "ctags-lsp",
+    }
 }
 
 fn get_ctags_lsp_binary_url() -> Result<CtagsLspBinary, ErrorMessage> {
@@ -50,15 +56,19 @@ fn get_ctags_lsp_binary_url() -> Result<CtagsLspBinary, ErrorMessage> {
 }
 
 pub fn get_ctags_lsp_binary_path() -> String {
-    format!("{}/{}", CTAGS_LSP_FOLDER_NAME, CTAGS_LSP_BINARY_NAME)
+    format!("{}/{}", CTAGS_LSP_FOLDER_NAME, ctags_lsp_binary_name())
 }
 
 pub fn download_ctags_lsp_binary() -> Result<(), ErrorMessage> {
+    let binary_path = get_ctags_lsp_binary_path();
+    if std::fs::metadata(&binary_path).is_ok() {
+        return Ok(());
+    }
+
     let lsp_binary = get_ctags_lsp_binary_url()?;
     zed::download_file(&lsp_binary.url, CTAGS_LSP_FOLDER_NAME, lsp_binary.file_type)
         .map_err(|msg| format!("Error downloading ctags lsp: {}", msg))?;
 
-    let binary_path = &get_ctags_lsp_binary_path();
     zed::make_file_executable(&binary_path)
         .map_err(|msg| format!("Error making ctags lsp executable: {}", msg))?;
 
