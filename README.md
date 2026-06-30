@@ -65,6 +65,9 @@ You can also enable `ctags-lsp` for any other ctags-supported language by adding
     },
     "Python": {
       "language_servers": ["ctags-lsp"]
+    },
+    "Pascal": {
+      "language_servers": ["ctags-lsp"]
     }
   },
 ```
@@ -75,6 +78,7 @@ Ctags supports many programming languages including but not limited to:
 - C/C++
 - Java
 - Python
+- Pascal
 - JavaScript
 - TypeScript
 - Go
