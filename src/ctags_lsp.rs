@@ -59,6 +59,11 @@ pub fn get_ctags_lsp_binary_path() -> String {
     format!("{}/{}", CTAGS_LSP_FOLDER_NAME, ctags_lsp_binary_name())
 }
 
+pub fn get_ctags_lsp_args() -> Vec<String> {
+    let ctags_bin = std::env::var("CTAGS_BIN").unwrap_or_else(|_| "ctags".to_string());
+    vec!["--ctags-bin".to_string(), ctags_bin]
+}
+
 pub fn download_ctags_lsp_binary() -> Result<(), ErrorMessage> {
     let binary_path = get_ctags_lsp_binary_path();
     if std::fs::metadata(&binary_path).is_ok() {

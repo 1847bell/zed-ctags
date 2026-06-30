@@ -35,7 +35,7 @@ impl zed::Extension for CtagsExtension {
 
         Ok(zed::Command {
             command: ctags_lsp::get_ctags_lsp_binary_path(),
-            args: vec![],
+            args: ctags_lsp::get_ctags_lsp_args(),
             env: vec![],
         })
     }
