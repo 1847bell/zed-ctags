@@ -59,13 +59,24 @@ pub fn get_ctags_lsp_binary_path() -> String {
     format!("{}/{}", CTAGS_LSP_FOLDER_NAME, ctags_lsp_binary_name())
 }
 
-pub fn get_ctags_lsp_args() -> Vec<String> {
+pub fn get_ctags_lsp_args(worktree: &zed::Worktree) -> Vec<String> {
     let ctags_bin =
         std::env::var("CTAGS_BIN").unwrap_or_else(|_| match zed::current_platform().0 {
             zed::Os::Windows => "D:\\Tools\\ctags\\ctags.exe".to_string(),
             _ => "ctags".to_string(),
         });
-    vec!["--ctags-bin".to_string(), ctags_bin]
+    let root_path = worktree.root_path();
+    let tagfile = if root_path.ends_with('/') || root_path.ends_with('\\') {
+        format!("{}tags", root_path)
+    } else {
+        format!("{}/tags", root_path)
+    };
+    vec![
+        "--ctags-bin".to_string(),
+        ctags_bin,
+        "--tagfile".to_string(),
+        tagfile,
+    ]
 }
 
 pub fn download_ctags_lsp_binary() -> Result<(), ErrorMessage> {

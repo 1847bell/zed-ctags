@@ -12,7 +12,7 @@ impl zed::Extension for CtagsExtension {
     fn language_server_command(
         &mut self,
         language_server_id: &zed_extension_api::LanguageServerId,
-        _worktree: &zed_extension_api::Worktree,
+        worktree: &zed_extension_api::Worktree,
     ) -> zed_extension_api::Result<zed_extension_api::Command> {
         zed::set_language_server_installation_status(
             language_server_id,
@@ -35,7 +35,7 @@ impl zed::Extension for CtagsExtension {
 
         Ok(zed::Command {
             command: ctags_lsp::get_ctags_lsp_binary_path(),
-            args: ctags_lsp::get_ctags_lsp_args(),
+            args: ctags_lsp::get_ctags_lsp_args(worktree),
             env: vec![],
         })
     }
