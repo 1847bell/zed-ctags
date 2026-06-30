@@ -18,19 +18,28 @@ jobs:
         with:
           targets: wasm32-wasip1
 
+      - name: Install cargo-component
+        run: cargo install cargo-component --locked
+
       - name: Check formatting
         run: cargo fmt -- --check
 
-      - name: Build extension wasm
-        run: cargo build --release --target wasm32-wasip1
+      - name: Build extension component
+        run: cargo component build --release --target wasm32-wasip1
 
       - name: Package local extension
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p dist/ctags
+          wasm_file=$(find target/wasm32-wasip1/release -maxdepth 1 -name 'zed_ctags*.wasm' -print -quit)
+          if [[ -z "$wasm_file" ]]; then
+            echo "Could not find built zed_ctags wasm component" >&2
+            find target -name '*.wasm' -print >&2
+            exit 1
+          fi
           cp extension.toml dist/ctags/extension.toml
-          cp target/wasm32-wasip1/release/zed_ctags.wasm dist/ctags/extension.wasm
+          cp "$wasm_file" dist/ctags/extension.wasm
           cat > dist/ctags/install.ps1 <<'SCRIPT'
           $ErrorActionPreference = "Stop"
           $target = Join-Path $env:LOCALAPPDATA "Zed\extensions\installed\ctags"
